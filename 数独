@@ -3,64 +3,64 @@
 #include <string.h> 
 #define MAX 81
 typedef struct asd{
-	int x;//待测试的值的x坐标 
-	int y;//待测试的值的y坐标  
-	int p;//待测试的值的位置（1道9代表在九宫格里的位置） 
-	int n;//待测试的值
+	int x; 
+	int y;  
+	int p;
+	int n;
 }A;
-A zhan[MAX];//存放每个放进题目数组测试的数据 
-void kongque(int queshi[9][9],int aa[9][9]);//函数将候选数数组里去除题目中有的数字 
-void shuchu(int aa[9][9],int q);//输出整个数组到文件中 
-int end(int aa[9][9]); //判断是否结束 
-int next(int queshi[9][9],int m,int n,int *x,int *y,int aa[9][9]);//查找下一个应该放进九宫格测试的数据 
-int chazhao(int aa[9][9],int m,int n,int num);//查找同一行同一列是否有相同的值 
-int nfrz(int queshi[9][9],int aa[9][9],int m,int n,int *p);//判断是否满足入栈条件（就是当前值是否可以插入九宫格） 
-int rz(int *t,int x,int y,int p,int num);//入栈操作 
-int cz(int *t,int *x,int *y,int *p,int *num);//出栈操作 
-void aaaa(char aa[10],int a);//计算题目文件的文件名 
-void bbbb(char aa[10],int a);//计算答案文件的文件名
+A zhan[MAX]; 
+void kongque(int queshi[9][9],int aa[9][9]); 
+void shuchu(int aa[9][9],int q);
+int end(int aa[9][9]); 
+int next(int queshi[9][9],int m,int n,int *x,int *y,int aa[9][9]); 
+int chazhao(int aa[9][9],int m,int n,int num);
+int nfrz(int queshi[9][9],int aa[9][9],int m,int n,int *p); 
+int rz(int *t,int x,int y,int p,int num); 
+int cz(int *t,int *x,int *y,int *p,int *num);
+void aaaa(char aa[10],int a);
+void bbbb(char aa[10],int a);
 int main(){
-	int i;//记录该调用哪道题 
+	int i; 
 	for(i=0;i<1000;i++){
-		int aa[9][9],j,k;//aa数组存放的是题目数独 
-		int queshi[9][9];//存放的是每个九宫格的待选数 
-		int end=0;//判断循环结束条件 
-		int h=0,l=0,p=1;//h是候选数的行坐标，l是候选数的列坐标，p代表当前测试数属于小九宫格的位置 
-		int t=-1;//栈的长度 
+		int aa[9][9],j,k; 
+		int queshi[9][9]; 
+		int end=0;
+		int h=0,l=0,p=1;
+		int t=-1;
 		int s=0,num;
 		FILE *u;
 		char qwe[10];
-		for(j=0;j<9;j++)//将数组置为每行都是（1到9） 
+		for(j=0;j<9;j++) 
 			for(k=0;k<9;k++)
 				queshi[j][k]=k+1;
 		aaaa(qwe,i);
 		u=fopen(qwe,"r");
-		for(j=0;j<9;j++){//读入题目 
+		for(j=0;j<9;j++){
 			for(k=0;k<9;k++){
 				fscanf(u,"%d",&aa[j][k]);
 			}
 		}
 		fclose(u);
-		memset(zhan,0,sizeof(zhan));//将栈的数据全部置为0 
+		memset(zhan,0,sizeof(zhan));
 		kongque(queshi,aa);
-		while(end!=1){//开始求解 
-			s=next(queshi,h,l,&h,&l,aa);//查找下一个应该放进九宫格测试的数据
-			if(s==0){//如果找到则进入下一层 
-				s=nfrz(queshi,aa,h,l,&p);//判断能否插入数独里 
-				if(s==0){//如果可以则将插入的数据存放到栈里（入栈） 
+		while(end!=1){
+			s=next(queshi,h,l,&h,&l,aa);
+			if(s==0){
+				s=nfrz(queshi,aa,h,l,&p); 
+				if(s==0){ 
 					s=rz(&t,h,l,p,queshi[h][l]);
-					if(s==0){ //如果入栈成功则写入数独
+					if(s==0){ 
 						aa[h/3*3+(p-1)/3][h%3*3+(p-1)%3]=queshi[h][l];
-						l++;//待选数跳到下一个 
-						p=1;//重新从第一个小格子开始判断是否插入 
+						l++; 
+						p=1;
 					}
 					else{
-						end=1;//循环结束 
+						end=1; 
 					}
 				}
 				else{
 					s=cz(&t,&h,&l,&p,&num);
-					if(s==0){//如果出栈成功则擦除插入的数据 
+					if(s==0){ 
 						aa[h/3*3+(p-1)/3][h%3*3+(p-1)%3]=0;
 						p++;
 					}
@@ -69,7 +69,7 @@ int main(){
 				}
 			}
 			else if(s==-1){
-				shuchu(aa,i);//输出求解完毕的数独 
+				shuchu(aa,i); 
 				end=1; 
 			}
 			else{
@@ -80,20 +80,19 @@ int main(){
 	}
 	return 0;
 }
-//函数将候选数数组里去除题目中有的数字 
+ 
 void kongque(int queshi[9][9],int aa[9][9]){
 	int i,j,x,y;
 	for(i=0;i<j;i++){
 		for(j=0;j<9;j++){
 			if(aa[i][j]){
-				x=i/3*3+j/3;//数独数组和候选数数组的坐标转换 
+				x=i/3*3+j/3; 
 				y=aa[i][j]-1;
 				queshi[x][y]=0;
 			}
 		}
 	}
 }
-//输出整个数组到文件中
 void shuchu(int aa[9][9],int q){
 	int i,j;
 	FILE *p;
@@ -108,18 +107,17 @@ void shuchu(int aa[9][9],int q){
 	}
 	fclose(p);
 }
-//判断是否结束
 int end(int aa[9][9]){
 	int i,j,num=0;
 	for(i=0;i<9;i++){
 		num=0;
 		for(j=0;j<0;j++){
-			num+=aa[i][j];//检查每一行是否为1到9 
+			num+=aa[i][j]; 
 		}
 		if(num!=45)
 			return -1;
 	}
-	for(j=0;j<9;j++){//检查每一列是否为1到9 
+	for(j=0;j<9;j++){
 		num=0;
 		for(i=0;i<9;i++){
 			num+=aa[i][j];
@@ -129,15 +127,14 @@ int end(int aa[9][9]){
 	}
 	return 0;
 }
-//查找下一个应该放进九宫格测试的数据 
 int next(int queshi[9][9],int m,int n,int *x,int *y,int aa[9][9]){
 	int qqq=0;
-	if(n>8){//如果当前小九宫格填写完毕则进入下一个九宫格 
+	if(n>8){ 
 		n=0;
 		m++;
 	}
 	if(m>8){
-		qqq=end(aa);//判断是否结束 
+		qqq=end(aa);
 		if(qqq!=0)
 			return -1;
 		else
@@ -158,24 +155,22 @@ int next(int queshi[9][9],int m,int n,int *x,int *y,int aa[9][9]){
 			}
 		}
 	}
-	*x=m;//重新获取测试的值的x坐标和y坐标 
+	*x=m; 
 	*y=n;
 	return 0;
 }
-//查找同一行同一列是否有相同的值 
 int chazhao(int aa[9][9],int m,int n,int num){
 	int i;
-	for(i=0;i<9;i++){//查找行 
+	for(i=0;i<9;i++){ 
 		if(aa[m][i]==num)
 			return -1;
 	}
-	for(i=0;i<9;i++){//查找列 
+	for(i=0;i<9;i++){
 		if(aa[i][n]==num)
 			return -1;
 	}
 	return 0;
-}
-//判断是否满足入栈条件（就是当前值是否可以插入九宫格） 
+} 
 int nfrz(int queshi[9][9],int aa[9][9],int m,int n,int *p){
 	int s=*p;
 	int i,t1,t2,num;
@@ -198,7 +193,6 @@ int nfrz(int queshi[9][9],int aa[9][9],int m,int n,int *p){
 	}
 	return -1;
 }
-//入栈操作 
 int rz(int *t,int x,int y,int p,int num){
 	if(*t>=MAX){
 		return -1;
@@ -211,8 +205,7 @@ int rz(int *t,int x,int y,int p,int num){
 		zhan[*t].n=num;
 		return 0;
 	}
-}
-//出栈操作 
+} 
 int cz(int *t,int *x,int *y,int *p,int *num){
 	if(*t==-1){
 		return -1;
@@ -226,7 +219,6 @@ int cz(int *t,int *x,int *y,int *p,int *num){
 		return 0;
 	}
 }
-//计算题目文件的文件名 
 void aaaa(char aa[10],int a){
 	if(a>=0&&a<10){
 		aa[0]='0';
